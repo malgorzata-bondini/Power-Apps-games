@@ -1,0 +1,105 @@
+Screens:
+  EkranRecenzji:
+    Properties:
+      Fill: =RGBA(239,237,228,1)
+      LoadingSpinnerColor: =RGBA(56, 96, 178, 1)
+      OnVisible: =ClearCollect(colTeRecenzje, Filter(Recenzje, FilmId = gblPickId))
+    Children:
+      - NagłówekRec:
+          Control: HtmlViewer@2.1.0
+          Properties:
+            Font: =Font.'Open Sans'
+            Height: =219
+            HtmlText: |-
+              ="<div style='font-family:Segoe UI,sans-serif;padding:0'>" &
+              "<p style='font-family:Consolas,monospace;font-size:18px;letter-spacing:.18em;text-transform:uppercase;color:#A6231A;margin:0 0 22px'>Co ludzie piszą...</p>" &
+              "<p style='font-family:Georgia,serif;font-weight:400;font-size:52px;line-height:1.1;letter-spacing:-.02em;color:#17150F;margin:0 0 38px;overflow-wrap:break-word;max-width:700px'>" & gblPick.Tytul & "</p>" &
+              "<div style='height:16px;background-color:#17150F;background-image:repeating-linear-gradient(to right,transparent 0 9px,#EFEDE4 9px 21px)'></div>" &
+              "</div>"
+            Size: =11.70
+            Width: =1332
+            X: =22
+            Y: =46
+      - IkonkaCofnij_1:
+          Control: Classic/Icon@2.5.0
+          Properties:
+            BorderColor: =RGBA(0, 18, 107, 1)
+            Color: =RGBA(74, 70, 60, 1)
+            Height: =60
+            HoverColor: =RGBA(166, 35, 26, 1)
+            Icon: =Icon.BackArrow
+            OnSelect: =Navigate(MovieApp, ScreenTransition.Fade)
+            PaddingRight: =0.00
+            PaddingTop: =0.00
+            PressedBorderColor: =RGBA(110, 22, 16, 1)
+            Width: =72
+            X: =1256
+            Y: =28
+      - PlakatRec:
+          Control: HtmlViewer@2.1.0
+          Properties:
+            Font: =Font.'Open Sans'
+            Height: =365
+            HtmlText: |-
+              =With({plakat: LookUp(colPlakaty As p, p.FilmId = gblPick.FilmId, p.Url)},
+              If(!IsBlank(plakat),
+              "<div style='font-family:Segoe UI,sans-serif;width:210px'>" &
+              "<img src='" & plakat & "' style='display:block;width:210px;border:1px solid #D8D3C4'>" &
+              "<p style='font-family:Consolas,monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#8B8677;margin:12px 0 0;text-align:center'>" & gblPick.Rok & " &nbsp; reż. " & gblPick.Rezyser & "</p>" &
+              "</div>",
+              ""))
+            Size: =11.70
+            Width: =235
+            X: =1006
+            Y: =286
+      - ListaRecenzji:
+          Control: Gallery@2.15.0
+          Variant: VariableHeight
+          Properties:
+            BorderColor: =RGBA(0, 18, 107, 1)
+            Height: =408
+            Items: =Filter(Recenzje, FilmId = gblPickId)
+            TemplateSize: =345
+            Width: =846
+            X: =22
+            Y: =265
+          Children:
+            - MiaraTekstu:
+                Control: Label@2.5.1
+                Properties:
+                  BorderColor: =RGBA(0, 18, 107, 1)
+                  Color: =RGBA(0,0,0,0)
+                  Font: =Font.'Segoe UI'
+                  Height: =28
+                  LineHeight: =1.4
+                  OnSelect: =Select(Parent)
+                  PaddingRight: =4.50
+                  PaddingTop: =4.50
+                  Size: =16.19
+                  Text: =Trim(PlainText(ThisItem.Recenzja))
+                  Width: =433
+                  X: =62.98
+                  Y: =150
+            - KartaRecenzji:
+                Control: HtmlViewer@2.1.0
+                Properties:
+                  Font: =Font.'Open Sans'
+                  Height: =400
+                  HtmlText: |-
+                    =With({t: Trim(PlainText(ThisItem.Recenzja))},
+                    "<div style='background:#F8F6F0;border-top:1px solid #D8D3C4;border-bottom:1px solid #D8D3C4;padding:24px 50px;box-sizing:border-box;min-height:" & Max(Self.Height - 34, 80) & "px;position:relative;font-family:Segoe UI,sans-serif'>" &
+                    "<div style='position:absolute;left:0;top:0;bottom:0;width:22px;background-color:#17150F;background-image:repeating-linear-gradient(to bottom,transparent 0 9px,#F8F6F0 9px 21px)'></div>" &
+                    "<div style='position:absolute;right:0;top:0;bottom:0;width:22px;background-color:#17150F;background-image:repeating-linear-gradient(to bottom,transparent 0 9px,#F8F6F0 9px 21px)'></div>" &
+                    "<p style='font-family:Consolas,monospace;font-size:15px;letter-spacing:.14em;text-transform:uppercase;color:#A6231A;margin:0 0 20px'>" & ThisItem.Autor & "</p>" &
+                    "<div style='font-size:35px;line-height:42px;letter-spacing:.12em;color:#C9A227;margin:0 0 34px'>" & Left("★★★★★", ThisItem.Ocena) & "<span style='color:#D8D3C4'>" & Left("☆☆☆☆☆", 5 - ThisItem.Ocena) & "</span></div>" &
+                    If(Len(t) > 0,
+                    "<div style='margin:0;padding:0 0 0 20px;border-left:2px solid #A6231A;font-family:Georgia,serif;font-style:italic;color:#17150F;font-size:22px;line-height:1.4;width:500px;text-align:justify'>„" & t & "”</div>",
+                    "<p style='margin:0;font-family:Consolas,monospace;font-size:14px;letter-spacing:.16em;text-transform:uppercase;color:#8B8677'>Bez słowa komentarza</p>") &
+                    "</div>"
+                    )
+                  OnSelect: =Select(Parent)
+                  PaddingRight: =4.50
+                  PaddingTop: =4.50
+                  Size: =11.70
+                  Width: =841
+                  X: =0.00

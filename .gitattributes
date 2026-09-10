@@ -1,0 +1,12 @@
+# GitHub (Linguist) czyta rozszerzenie .fx jako HLSL, czyli jezyk shaderow
+# DirectX. Tutaj .fx to Power Fx - tresc wlasciwosci OnStart aplikacji
+# canvas. Linguist nie zna Power Fx, wiec wylaczamy te pliki ze statystyki,
+# zeby pasek jezykow nie klamal.
+*.fx linguist-detectable=false
+
+# Ekrany to oficjalny format zrodlowy Power Apps (Source Code / pa.yaml).
+# Maja sie liczyc jako YAML - to jest jezyk tego projektu.
+*.pa.yaml linguist-language=YAML
+
+# Podglady w README to dokumentacja, nie zawartosc repozytorium.
+docs/** linguist-documentation

@@ -1,0 +1,214 @@
+Screens:
+  Wybory:
+    Properties:
+      Fill: =RGBA(163,33,39,1)
+      LoadingSpinnerColor: =RGBA(0, 120, 212, 1)
+      OnVisible: =If(CountRows(colKolo) = 0, ClearCollect(colKolo, {Nr:1,Temat:"Jedzenie"}, {Nr:2,Temat:"Popkultura"}, {Nr:3,Temat:"Praca"}, {Nr:4,Temat:"Styl życia"}, {Nr:5,Temat:"Otwarte"}, {Nr:6,Temat:"Jedzenie"}, {Nr:7,Temat:"Popkultura"}, {Nr:8,Temat:"Praca"}, {Nr:9,Temat:"Styl życia"}, {Nr:10,Temat:"Otwarte"}))
+    Children:
+      - Tlo:
+          Control: HtmlViewer@2.1.0
+          Properties:
+            Height: =Parent.Height
+            HtmlText: ="<div style='width:100%;height:" & Round(Self.Height - 16, 0) & "px;background:repeating-linear-gradient(90deg,#A32127 0 64px,#951C22 64px 128px)'></div>"
+            PaddingLeft: =0
+            PaddingTop: =0
+            Width: =Parent.Width
+      - Kolo:
+          Control: HtmlViewer@2.1.0
+          Properties:
+            Height: =Self.Width
+            HtmlText: |-
+              =With({s: Round(Min(Self.Width, Self.Height) - 6, 0), kat: Mod(Round(If(gblKrecenie, gblKat0 + (gblKatCel - gblKat0) * (1 - Power(1 - Min(SpinTimer.Value / SpinTimer.Duration, 1), 2)), gblKat), 0), 360), win: !gblKrecenie && gblMaPytanie && gblIdx > 0}, With({c: Round(s / 2, 0), d: Round(s * 0.851, 0), bw: Round(s * 0.03, 0), br: Round(s * 0.466, 0), r1: Round(s * 0.021, 0), r2: Round(s * 0.036, 0), r3: Round(s * 0.045, 0), hb: Round(s * 0.268, 0), pw: Round(s * 0.036, 0), ph: Round(s * 0.089, 0), fs: Round(s * 0.034, 0)}, "<style>@keyframes bulbWin{0%,100%{background:#FFF3D6;box-shadow:0 0 15px 5px rgba(255,213,79,.95),0 0 28px 11px rgba(255,180,40,.5)}50%{background:#8A6520;box-shadow:0 0 3px 1px rgba(255,213,79,.25)}}@keyframes bulbRun{0%,100%{background:#FFE9A8;box-shadow:0 0 9px 3px rgba(255,213,79,.55)}50%{background:#7A5A1C;box-shadow:0 0 2px 1px rgba(255,213,79,.2)}}@keyframes haloPulse{0%,100%{opacity:.6}50%{opacity:.95}}</style><div style='width:100%;height:100%;display:flex;align-items:center;justify-content:center;overflow:hidden'><div style='position:relative;width:" & s & "px;height:" & s & "px;font-family:Segoe UI,sans-serif'>" & If(win, "<div style='position:absolute;left:0;top:0;width:" & s & "px;height:" & s & "px;border-radius:50%;background:radial-gradient(circle at 50% 50%,rgba(255,205,70,0) 0%,rgba(255,205,70,0) 46%,rgba(255,205,70,.45) 53%,rgba(255,190,50,.2) 68%,rgba(255,190,50,0) 86%);animation:haloPulse 1100ms ease-in-out infinite'></div>", "") & Concat(colZarowki As b, "<div style='position:absolute;left:" & Round(c + br * b.Sx - bw / 2, 0) & "px;top:" & Round(c - br * b.Cy - bw / 2, 0) & "px;width:" & bw & "px;height:" & bw & "px;border-radius:50%;background:" & If(win, "#FFF3D6", "#C9A64E") & ";box-shadow:0 0 7px 2px rgba(255,213,79,.4);animation:" & If(win, "bulbWin 620ms ease-in-out " & Mod(b.Nr, 2) * 310 & "ms infinite", If(gblKrecenie, "bulbRun 340ms linear " & Mod(b.Nr, 4) * 85 & "ms infinite", "none")) & "'></div>") & "<div style='position:absolute;left:" & Round((s - d) / 2, 0) & "px;top:" & Round((s - d) / 2, 0) & "px;width:" & d & "px;height:" & d & "px;border-radius:50%;box-shadow:0 0 0 " & r1 & "px #FFF3D6, 0 0 0 " & r2 & "px #F2C14E, 0 0 0 " & r3 & "px #B8862A, 0 " & Round(s * 0.04, 0) & "px " & Round(s * 0.077, 0) & "px rgba(0,0,0,.45);overflow:hidden'>" & "<div style='position:absolute;left:0;top:0;width:" & d & "px;height:" & d & "px;border-radius:50%;transform:rotate(" & kat & "deg);background:conic-gradient(" & Concat(colKolo As w, Switch(Mod(w.Nr, 5), 1, "#EDBE4E", 2, "#2A8C5B", 3, "#DCBE9A", 4, "#CE5218", "#9E2A2E") & " " & (w.Nr - 1) * 36 & "deg " & w.Nr * 36 & "deg", ",") & ")'>" & If(win, "<div style='position:absolute;left:0;top:0;width:" & d & "px;height:" & d & "px;border-radius:50%;background:conic-gradient(transparent 0deg " & (gblIdx - 1) * 36 & "deg,rgba(38,20,15,.3) " & (gblIdx - 1) * 36 & "deg " & gblIdx * 36 & "deg,transparent " & gblIdx * 36 & "deg 360deg)'></div>", "") & "<div style='position:absolute;left:0;top:0;width:" & d & "px;height:" & d & "px;border-radius:50%;background:radial-gradient(circle at 32% 24%,rgba(255,255,255,.22) 0%,rgba(255,255,255,.06) 34%,rgba(0,0,0,0) 56%,rgba(0,0,0,.22) 100%)'></div>" & Concat(colKolo As w, "<span style='position:absolute;left:" & Round(d / 2 + 0.35 * d * w.Sx - 0.125 * d, 0) & "px;top:" & Round(d / 2 - 0.35 * d * w.Cy - 0.6 * fs, 0) & "px;width:" & Round(d * 0.25, 0) & "px;text-align:center;white-space:nowrap;transform-origin:" & Round(d * 0.125, 0) & "px " & Round(fs * 0.6, 0) & "px;transform:rotate(" & w.Kat & "deg);font-family:Segoe UI,Arial,sans-serif;font-size:" & fs & "px;font-weight:600;letter-spacing:.01em;color:" & Switch(Mod(w.Nr, 5), 1, "#26140F", 3, "#26140F", "#FFF8E7") & "'>" & w.Temat & "</span>") & "</div></div>" & "<div style='position:absolute;left:" & Round((s - hb) / 2, 0) & "px;top:" & Round((s - hb) / 2, 0) & "px;width:" & hb & "px;height:" & hb & "px;border-radius:50%;background:radial-gradient(circle at 36% 28%,#FFFBEE 0%,#FFF3D6 52%,#E8D5B0 100%);box-shadow:0 0 0 " & Round(s * 0.013, 0) & "px #B8862A, 0 " & Round(s * 0.019, 0) & "px " & Round(s * 0.04, 0) & "px rgba(0,0,0,.45), inset 0 -3px 9px rgba(0,0,0,.12)" & If(win, ", 0 0 " & Round(s * 0.068, 0) & "px " & Round(s * 0.019, 0) & "px rgba(255,213,79,.7)", "") & "'></div>" & "<div style='position:absolute;left:" & (c - pw) & "px;top:" & Round(s * 0.008, 0) & "px;width:0;height:0;border-left:" & pw & "px solid transparent;border-right:" & pw & "px solid transparent;border-top:" & ph & "px solid #FFF3D6;filter:drop-shadow(0 3px 3px rgba(0,0,0,.45))'></div>" & "</div></div>"))
+            PaddingLeft: =0
+            PaddingTop: =0
+            Width: =If(Parent.Width < 980, Min(Parent.Width - 64, 460), Min(NaglowekW.Width, 520))
+            X: =If(Parent.Width < 980, (Parent.Width - Self.Width) / 2, NaglowekW.X + NaglowekW.Width + 48 + (NaglowekW.Width - Self.Width) / 2)
+            Y: =120
+      - NaglowekW:
+          Control: HtmlViewer@2.1.0
+          Properties:
+            Height: =178
+            HtmlText: ="<div style='font-family:Segoe UI,sans-serif;text-align:center'><p style='font-family:Consolas,monospace;font-size:20px;letter-spacing:.38em;text-transform:uppercase;color:#F2C14E;margin:0 0 14px'>Gotowi?</p><h1 style='font-family:Georgia,serif;font-weight:400;font-size:35px;line-height:1.04;color:#FFF3D6;margin:0 0 16px'>Losuj pytanie, losuj wyzwanie!</h1><p style='font-size:18px;line-height:1.6;color:#E6BFA8;margin:0 auto;max-width:48ch'>Zakręć kołem, poznaj kategorię i ...przygotuj się na walkę o pizzę z ananasem!</p></div>"
+            PaddingLeft: =0
+            PaddingTop: =0
+            Width: =If(Parent.Width < 980, Min(Parent.Width - 64, 520), (Min(Parent.Width - 64, 1160) - 48) / 2)
+            X: =If(Parent.Width < 980, (Parent.Width - Self.Width) / 2, (Parent.Width - Min(Parent.Width - 64, 1160)) / 2)
+            Y: =75
+      - StartHub:
+          Control: Classic/Button@2.2.0
+          Properties:
+            BorderColor: =RGBA(0,0,0,0)
+            BorderThickness: =0
+            Color: =RGBA(163,33,39,1)
+            DisabledBorderColor: =RGBA(0,0,0,0)
+            DisabledColor: =RGBA(163,33,39,0.35)
+            DisabledFill: =RGBA(0,0,0,0)
+            DisplayMode: =If(gblKrecenie, DisplayMode.Disabled, DisplayMode.Edit)
+            Fill: =RGBA(0,0,0,0)
+            FontWeight: =FontWeight.Bold
+            Height: =Self.Width
+            HoverBorderColor: =RGBA(0,0,0,0)
+            HoverColor: =RGBA(130,24,29,1)
+            HoverFill: =RGBA(0,0,0,0)
+            OnSelect: |-
+              =If(!gblKrecenie, Set(gblIdx, RandBetween(1, CountRows(colKolo))); Set(gblTemat, LookUp(colKolo, Nr = gblIdx).Temat); Set(gblKat0, Mod(gblKat, 360)); Set(gblKatCel, gblKat0 + 1440 + Mod(360 - (gblIdx - 0.5) * (360 / CountRows(colKolo)) - gblKat0, 360)); If(CountRows(colGracze) > 0, With({pula: If(gblPowtorka >= 2 && CountRows(colGracze) > 1, Filter(colGracze As o, o.Imie <> gblOsoba), colGracze)}, Set(gblNowa, First(Shuffle(pula)).Imie)); Set(gblPowtorka, If(gblNowa = gblOsoba, gblPowtorka + 1, 1)); Set(gblOsoba, gblNowa), Set(gblOsoba, ""); Set(gblPowtorka, 0)); If(CountRows(Filter(colPytania As q, q.Temat = gblTemat && !(q.Id in colWidziane.Id))) = 0, RemoveIf(colWidziane, Temat = gblTemat)); With({sw: Filter(colPytania As q, q.Temat = gblTemat && !(q.Id in colWidziane.Id))}, If(CountRows(sw) > 0, Set(gblPytanie, First(Shuffle(sw))); Collect(colWidziane, {Id: gblPytanie.Id, Temat: gblPytanie.Temat}))); Set(gblMaPytanie, false); Set(gblKrecenie, true))
+            PressedBorderColor: =RGBA(0,0,0,0)
+            PressedColor: =RGBA(84,14,17,1)
+            PressedFill: =RGBA(0,0,0,0)
+            RadiusBottomLeft: =Self.Width / 2
+            RadiusBottomRight: =Self.Width / 2
+            RadiusTopLeft: =Self.Width / 2
+            RadiusTopRight: =Self.Width / 2
+            Size: =Max(9, Round(Kolo.Width * 0.03, 0))
+            Text: ="Zakręć"
+            Width: =Round((Kolo.Width - 6) * 0.268, 0)
+            X: =Kolo.X + Round((Kolo.Width - Self.Width) / 2, 0)
+            Y: =Kolo.Y + Round((Kolo.Height - Self.Height) / 2, 0) + If(gblKrecenie, 2, 0)
+      - Fajerwerki:
+          Control: Image@2.2.3
+          Properties:
+            Height: =KartaPytania.Height
+            Image: |-
+              ="data:image/svg+xml;utf8," & EncodeUrl("<svg xmlns='http://www.w3.org/2000/svg' width='500' height='340' viewBox='0 0 500 340'><style>@keyframes fw" & gblIle & "{0%{transform:translateX(0);opacity:1}70%{opacity:1}100%{transform:translateX(150px);opacity:0}}</style>" & Concat(Table({Sx: 115, Sy: 99, Op: 0}, {Sx: 385, Sy: 132, Op: 220}, {Sx: 250, Sy: 236, Op: 430}) As f, Concat(Sequence(8) As i, "<g transform='rotate(" & (i.Value - 1) * 45 & " " & f.Sx & " " & f.Sy & ")'><circle cx='" & f.Sx & "' cy='" & f.Sy & "' r='5' fill='" & Switch(Mod(i.Value, 4), 1, "#F2C14E", 2, "#FFF3D6", 3, "#FF8A2B", "#2FA36B") & "' style='opacity:0;animation:fw" & gblIle & " 1500ms cubic-bezier(.12,.7,.3,1) " & f.Op & "ms forwards'/></g>")) & "</svg>")
+            ImagePosition: =ImagePosition.Fill
+            Visible: =gblMaPytanie && !gblKrecenie
+            Width: =KartaPytania.Width
+            X: =KartaPytania.X
+            Y: =KartaPytania.Y
+      - WynikNapis:
+          Control: HtmlViewer@2.1.0
+          Properties:
+            AutoHeight: =true
+            Height: =61
+            HtmlText: ="<div style='text-align:center;font-family:Segoe UI,sans-serif'><p style='font-family:Georgia,serif;font-size:40px;font-weight:400;color:#F2C14E;margin:0'>" & If(gblKrecenie || Len(gblTemat) = 0, "&nbsp;", gblTemat) & "</p></div>"
+            Width: =Kolo.Width
+            X: =Kolo.X
+            Y: =657
+      - SpinTimer:
+          Control: Timer@2.1.0
+          Properties:
+            BorderThickness: =0
+            Color: =RGBA(163,33,39,1)
+            Duration: =3600
+            Fill: =RGBA(163,33,39,1)
+            Height: =24
+            OnTimerEnd: =Set(gblKat, Mod(gblKatCel, 360)); Set(gblKrecenie, false); Set(gblMaPytanie, true); Set(gblIle, gblIle + 1)
+            Reset: =!gblKrecenie
+            Start: =gblKrecenie
+            Visible: =false
+            Width: =60
+            X: =10
+            Y: =Parent.Height - 36
+      - BtnDodaj:
+          Control: Classic/Button@2.2.0
+          Properties:
+            BorderThickness: =0
+            Color: =RGBA(38,20,15,1)
+            Fill: =RGBA(242,193,78,1)
+            FontWeight: =FontWeight.Bold
+            Height: =36
+            HoverColor: =RGBA(38,20,15,1)
+            HoverFill: =RGBA(255,213,120,1)
+            OnSelect: =Navigate(DodajPytanie, ScreenTransition.CoverRight)
+            PressedColor: =RGBA(38,20,15,1)
+            PressedFill: =RGBA(216,168,60,1)
+            RadiusBottomLeft: =18
+            RadiusBottomRight: =18
+            RadiusTopLeft: =18
+            RadiusTopRight: =18
+            Size: =11
+            Text: ="DODAJ PYTANIE"
+            Width: =190
+            X: =Parent.Width - Self.Width - 32
+            Y: =28
+      - BtnOsoby:
+          Control: Classic/Button@2.2.0
+          Properties:
+            BorderColor: =RGBA(242,193,78,0.45)
+            BorderThickness: =1
+            Color: =RGBA(230,191,168,0.9)
+            Fill: =RGBA(0,0,0,0)
+            FontWeight: =FontWeight.Bold
+            Height: =36
+            HoverBorderColor: =RGBA(242,193,78,0.9)
+            HoverColor: =RGBA(255,243,214,1)
+            HoverFill: =RGBA(242,193,78,0.18)
+            OnSelect: =Navigate(WyborOsob, ScreenTransition.CoverRight)
+            PressedBorderColor: =RGBA(242,193,78,1)
+            PressedColor: =RGBA(38,20,15,1)
+            PressedFill: =RGBA(242,193,78,0.62)
+            RadiusBottomLeft: =18
+            RadiusBottomRight: =18
+            RadiusTopLeft: =18
+            RadiusTopRight: =18
+            Size: =11
+            Text: ="WYBIERZ OSOBY" & If(CountRows(colGracze) > 0, "  (" & CountRows(colGracze) & ")", "")
+            Width: =190
+            X: =Parent.Width - Self.Width - 32
+            Y: =74
+      - ResetPuli:
+          Control: Classic/Button@2.2.0
+          Properties:
+            BorderColor: =RGBA(242,193,78,0.45)
+            BorderThickness: =1
+            Color: =RGBA(230,191,168,0.9)
+            Fill: =RGBA(242,189,53,0.42)
+            FocusedBorderColor: =RGBA(242,193,78,0.45)
+            FocusedBorderThickness: =1
+            FontWeight: =FontWeight.Bold
+            Height: =34
+            HoverBorderColor: =RGBA(242,193,78,0.6)
+            HoverColor: =RGBA(255,243,214,1)
+            HoverFill: =RGBA(242,189,53,0.52)
+            OnSelect: =Clear(colWidziane); Set(gblOsoba, ""); Set(gblPowtorka, 0); Set(gblIle, 0); Set(gblMaPytanie, false); Set(gblTemat, ""); Set(gblIdx, 0)
+            PressedBorderColor: =RGBA(242,193,78,0.5)
+            PressedColor: =RGBA(255,243,214,1)
+            PressedFill: =RGBA(242,189,53,0.56)
+            RadiusBottomLeft: =17
+            RadiusBottomRight: =17
+            RadiusTopLeft: =17
+            RadiusTopRight: =17
+            Size: =12
+            Text: ="RESETUJ PULĘ"
+            Visible: =gblIle > 0
+            Width: =170
+            X: =NaglowekW.X + (NaglowekW.Width - Self.Width) / 2
+            Y: =Licznik.Y + Licznik.Height + 20
+      - Licznik:
+          Control: Label@2.5.1
+          Properties:
+            Align: =Align.Center
+            AutoHeight: =true
+            Color: =RGBA(230,191,168,0.75)
+            Height: =26
+            Size: =12
+            Text: ="WYLOSOWANO " & Max(0, CountRows(colWidziane) - If(gblKrecenie, 1, 0)) & "  /  " & CountRows(colPytania) & " PYTAŃ"
+            Width: =NaglowekW.Width
+            X: =NaglowekW.X
+            Y: =KartaPytania.Y + KartaPytania.Height + 14
+      - SpinSound:
+          Control: Audio@2.3.1
+          Properties:
+            BorderColor: =RGBA(0, 0, 0, 0)
+            BorderStyle: =BorderStyle.None
+            BorderThickness: =2
+            Fill: =RGBA(0, 120, 212, 1)
+            Height: =1
+            Media: =Spin1
+            Reset: =!gblKrecenie
+            ShowControls: =false
+            Start: =gblKrecenie
+            Width: =1
+            Y: =Parent.Height - 1
+      - KartaPytania:
+          Control: HtmlViewer@2.1.0
+          Properties:
+            AutoHeight: =true
+            Height: =340
+            HtmlText: |-
+              =If( !gblMaPytanie, "<div style='background:rgba(0,0,0,.18);border:1px dashed rgba(242,193,78,.5);border-radius:16px;box-sizing:border-box;min-height:300px;display:flex;align-items:center;justify-content:center;text-align:center;padding:0 28px;font-family:Segoe UI,sans-serif;color:#E6BFA8;font-size:22px;line-height:1.45'>" & If(gblKrecenie, "Jeszcze chwila, kręci się…", "Zakręć kołem, żeby wylosować pytanie") & "</div>", With( {p: gblPytanie}, With( { ta: Substitute(Substitute(p.A, "&", "&amp;"), "<", "&lt;"), tb: Substitute(Substitute(p.B, "&", "&amp;"), "<", "&lt;"), tt: Substitute(Substitute(p.Temat, "&", "&amp;"), "<", "&lt;"), ti: Substitute(Substitute(p.Intro, "&", "&amp;"), "<", "&lt;"), to: Substitute(Substitute(gblOsoba, "&", "&amp;"), "<", "&lt;"), n: Max(1, Len(p.A), Len(p.B)), kw: Round(Max(90, Min((Self.Width - 108) / 2, 200)), 0), iw: Max(140, Self.Width - 104) }, With( { fs: Max(11, Round(Min(kw * 0.18, kw * 0.74 / Sqrt(3.3 * n)), 0)), fp: Max(13, Round(Min(30, Sqrt(iw * 150 / (3 * n))), 0)) }, "<div style='background:rgba(0,0,0,.22);border:1px solid rgba(242,193,78,.55);border-radius:16px;box-sizing:border-box;min-height:300px;padding:34px 22px 28px;font-family:Segoe UI,sans-serif;text-align:center'>" & If(Len(gblOsoba) = 0, "", "<p style='display:inline-block;font-family:Consolas,monospace;font-size:15px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:#26140F;background:#FFF3D6;border-radius:14px;padding:5px 16px;margin:0 0 14px'>" & to & "</p>") & "<p style='font-family:Consolas,monospace;font-size:18px;font-weight:700;letter-spacing:.3em;text-transform:uppercase;color:#F2C14E;margin:0 0 " & If(Len(p.Intro) = 0, 14, 6) & "px'>" & tt & "</p>" & If(Len(p.Intro) = 0, "", "<p style='font-family:Georgia,serif;font-style:italic;font-size:20px;line-height:1.3;color:#E6BFA8;margin:0 0 14px'>" & ti & "</p>") & If( Len(p.B) = 0, "<div style='display:flex;align-items:center;justify-content:center;width:100%;min-height:165px;border-radius:26px;box-sizing:border-box;padding:20px 30px;background:#F2C14E;box-shadow:0 10px 22px rgba(0,0,0,.4);color:#26140F;font-family:Georgia,serif;font-size:" & fp & "px;line-height:1.32'>" & ta & "</div>", "<div style='display:flex;align-items:center;justify-content:center;gap:10px'><span style='display:flex;align-items:center;justify-content:center;flex:0 0 auto;width:" & kw & "px;height:" & kw & "px;border-radius:50%;box-sizing:border-box;padding:12px;background:#F2C14E;box-shadow:0 10px 22px rgba(0,0,0,.42);color:#26140F;font-family:Georgia,serif;font-size:" & fs & "px;line-height:1.2;overflow-wrap:break-word'>" & ta & "</span><span style='display:flex;align-items:center;justify-content:center;flex:0 0 auto;width:44px;height:44px;border-radius:50%;border:1px solid rgba(242,193,78,.55);background:rgba(0,0,0,.25);font-family:Georgia,serif;font-size:16px;font-style:italic;color:#F2C14E'>vs</span><span style='display:flex;align-items:center;justify-content:center;flex:0 0 auto;width:" & kw & "px;height:" & kw & "px;border-radius:50%;box-sizing:border-box;padding:12px;background:#2FA36B;box-shadow:0 10px 22px rgba(0,0,0,.42);color:#FFF3D6;font-family:Georgia,serif;font-size:" & fs & "px;line-height:1.2;overflow-wrap:break-word'>" & tb & "</span></div>" ) & "</div>" ) ) ) )
+            PaddingLeft: =0
+            PaddingTop: =0
+            Width: =NaglowekW.Width
+            X: =NaglowekW.X
+            Y: =NaglowekW.Y + NaglowekW.Height + 8

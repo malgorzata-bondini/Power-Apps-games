@@ -1,0 +1,395 @@
+Screens:
+  MovieApp:
+    Properties:
+      Fill: =RGBA(239, 237, 228, 1)
+      LoadingSpinnerColor: =RGBA(56, 96, 178, 1)
+      OnVisible: =ClearCollect(colRecenzje, Recenzje)
+    Children:
+      - Timer1.Value:
+          Control: Timer@2.1.0
+          Properties:
+            AutoStart: =true
+            BorderColor: =ColorFade(Self.Fill, -15%)
+            BorderThickness: =0
+            Color: =RGBA(255, 255, 255, 1)
+            DisabledBorderColor: =ColorFade(Self.BorderColor, 70%)
+            DisabledColor: =ColorFade(Self.Fill, 90%)
+            DisabledFill: =ColorFade(Self.Fill, 70%)
+            Duration: =180
+            Fill: =RGBA(56, 96, 178, 1)
+            Font: =Font.'Open Sans'
+            Height: =0
+            HoverBorderColor: =ColorFade(Self.BorderColor, 20%)
+            HoverColor: =RGBA(255, 255, 255, 1)
+            HoverFill: =ColorFade(RGBA(56, 96, 178, 1), -20%)
+            OnTimerEnd: |-
+              =Set(gblFlickFilm, If(gblSpinLeft > 1, First(Shuffle(colPool)), gblFlickFilm));
+              Set(gblSpinLeft, Max(gblSpinLeft - 1, 0))
+            PaddingRight: =4.50
+            PaddingTop: =4.50
+            PressedBorderColor: =Self.Fill
+            PressedColor: =Self.Fill
+            PressedFill: =Self.Color
+            Repeat: =true
+            Size: =0.00
+            Width: =0.00
+            X: =35.99
+            Y: =40
+      - Losuj:
+          Control: Classic/Button@2.2.0
+          Properties:
+            BorderColor: =RGBA(0, 0, 0, 0)
+            BorderThickness: =0
+            Color: =RGBA(251, 248, 242, 1)
+            DisabledBorderColor: =RGBA(166, 166, 166, 1)
+            Fill: =RGBA(166, 35, 26, 1)
+            FocusedBorderColor: =RGBA(0, 0, 0, 0)
+            FocusedBorderThickness: =false
+            Font: =Font.'Open Sans'
+            FontWeight: =FontWeight.Bold
+            Height: =42
+            HoverBorderColor: =RGBA(0, 0, 0, 0)
+            HoverColor: =RGBA(251, 248, 242, 1)
+            HoverFill: =RGBA(142, 29, 21, 1)
+            OnSelect: |-
+              =Set(gblSpinLeft, 14);
+              If(CountRows(Filter(colPool As f, !(f.FilmId in colSeen.FilmId))) = 0, Clear(colSeen));
+              With({fresh: Filter(colPool As f, !(f.FilmId in colSeen.FilmId))},
+                  Set(gblPick, First(Shuffle(fresh)))
+              );
+              Collect(colSeen, {FilmId: gblPick.FilmId});
+              Set(gblHasPick, true);
+              Set(gblSpinLeft, 14)
+            PaddingRight: =4.50
+            PaddingTop: =4.50
+            PressedBorderColor: =RGBA(110, 22, 16, 1)
+            PressedColor: =RGBA(251, 248, 242, 1)
+            PressedFill: = RGBA(110, 22, 16, 1)
+            RadiusBottomLeft: =0
+            RadiusBottomRight: =0
+            RadiusTopLeft: =0
+            RadiusTopRight: =0
+            Size: =9.90
+            Text: ="Losuj"
+            Width: =118
+            X: =31
+            Y: =301
+      - Karta:
+          Control: HtmlViewer@2.1.0
+          Properties:
+            BorderColor: =RGBA(0, 0, 0, 0)
+            Font: =Font.'Open Sans'
+            Height: =374
+            HtmlText: |-
+              =With({f: If(gblSpinLeft > 0 && !IsBlank(gblFlickFilm.Tytul), gblFlickFilm, gblPick), plakat: LookUp(colPlakaty As p, p.FilmId = If(gblSpinLeft > 0 && !IsBlank(gblFlickFilm.Tytul), gblFlickFilm, gblPick).FilmId, p.Url)},
+              "<div style='background:#F8F6F0;border-top:1px solid #D8D3C4;border-bottom:1px solid #D8D3C4;padding:28px " & If(!IsBlank(plakat), "280px", "40px") & " 28px 40px;box-sizing:border-box;min-height:330px;position:relative;font-family:Segoe UI,sans-serif'>" &
+              "<div style='position:absolute;left:0;top:0;bottom:0;width:22px;background-color:#17150F;background-image:repeating-linear-gradient(to bottom,transparent 0 9px,#F8F6F0 9px 21px)'></div>" &
+              "<div style='position:absolute;right:0;top:0;bottom:0;width:22px;background-color:#17150F;background-image:repeating-linear-gradient(to bottom,transparent 0 9px,#F8F6F0 9px 21px)'></div>" &
+              If(!IsBlank(plakat), "<img src='" & plakat & "' style='position:absolute;top:50%;right:69px;transform:translateY(-50%);width:165px;height:248px;background:#EFEDE4;border:1px solid #D8D3C4'>", "") &
+              "<p style='font-family:Consolas,monospace;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:#A6231A;margin:0 0 18px'>" & f.Rok & " &nbsp; &nbsp; " & f.CzasText & " &nbsp; &nbsp; reż. " & f.Rezyser & "</p>" &
+              "<p style='font-family:Georgia,serif;font-weight:400;color:" & If(gblSpinLeft > 0, "#8B8677", "#17150F") & ";font-size:34px;line-height:1.08;letter-spacing:-.015em;margin:0 0 18px;overflow-wrap:break-word'>" & f.Tytul & "</p>" &
+              If(!IsBlank(f.Cytat),
+              "<div style='margin:0 0 14px;padding:0 0 0 20px;border-left:2px solid #A6231A;font-family:Georgia,serif;font-style:italic;color:#17150F;font-size:19px;line-height:1.34;text-align:justify'><span style='display:block;font-family:Consolas,monospace;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#8B8677;margin:0 0 7px;font-style:normal;text-align:left'>Sławny cytat</span>„" & f.Cytat & "”</div>",
+              "<p style='margin:0 0 14px;color:#4A463C;font-size:16px;text-align:justify'><span style='display:block;font-family:Consolas,monospace;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#8B8677;margin:0 0 7px;text-align:left'>Scena, którą się pamięta</span>" & f.Scena & "</p>") &
+              "<p style='margin:0 0 16px;color:#4A463C;font-size:15px;text-align:justify'>" & f.Zdanie & "</p>" &
+              "<div style='margin:0'>" & Concat(Split(f.Nastroje, ", "), "<span style='display:inline-block;font-family:Consolas,monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#8B8677;border:1px solid #D8D3C4;padding:5px 10px;margin:0 6px 6px 0'>" & Value & "</span>") & "</div>" &
+              "<a href='https://www.google.com/search?q=" & Substitute(f.Tytul & " " & f.Rok, " ", "+") & "' target='_blank' style='position:relative;top:5px;font-family:Consolas,monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#17150F;text-decoration:none;border-bottom:1px solid #A6231A;padding-bottom:3px'>Przejdźmy do konkretów</a>" &
+              "</div>"
+              )
+            PaddingRight: =4.50
+            PaddingTop: =4.50
+            Size: =10.80
+            Visible: =gblHasPick
+            Width: =841
+            X: =26
+            Y: =385
+      - PustaRamka:
+          Control: HtmlViewer@2.1.0
+          Properties:
+            Font: =Font.'Open Sans'
+            Height: =339
+            HtmlText: |-
+              ="<div style='background:#F8F6F0;border-top:1px solid #D8D3C4;border-bottom:1px solid #D8D3C4;padding:30px 50px;box-sizing:border-box;min-height:280px;position:relative;font-family:Segoe UI,sans-serif'>" &
+              "<div style='position:absolute;left:0;top:0;bottom:0;width:22px;background-color:#17150F;background-image:repeating-linear-gradient(to bottom,transparent 0 9px,#F8F6F0 9px 21px)'></div>" &
+              "<div style='position:absolute;right:0;top:0;bottom:0;width:22px;background-color:#17150F;background-image:repeating-linear-gradient(to bottom,transparent 0 9px,#F8F6F0 9px 21px)'></div>" &
+              "<p style='font-family:Georgia,serif;font-style:italic;font-weight:400;font-size:19px;line-height:1.45;color:#8B8677;margin:5px 0 0'>Naciśnij „Losuj” i odkryj swoje filmowe przeznaczenie.</p>" &
+              "</div>"
+            PaddingRight: =4.50
+            PaddingTop: =4.50
+            Size: =10.80
+            Visible: =!gblHasPick
+            Width: =841
+            X: =26
+            Y: =394
+      - Header:
+          Control: HtmlViewer@2.1.0
+          Properties:
+            Font: =Font.'Open Sans'
+            Height: =247
+            HtmlText: |-
+              ="<p style='font-family:Consolas,monospace;font-size:16px;letter-spacing:.20em;text-transform:uppercase;color:#A6231A;margin:0 2 22px'>Kartoteka&nbsp;&nbsp;&nbsp;" & CountRows(colFilms) & " tytułów</p>" &
+              "<p style='font-family:Georgia,serif;font-weight:400;font-size:46px;line-height:1.03;letter-spacing:-.02em;color:#17150F;margin:0 0 18px;white-space:nowrap'>Polska klasyka<br><i style='color:#4A463C'>na piątek wieczór</i></p>" &
+              "<p style='color:#4A463C;margin:0 0 14px;font-size:14px;line-height:1.16'>Masz ochotę na polskie kino, ale nie wiesz co wybrać? Ustaw nastrój, a resztę zostaw losowi i odkryj swoje filmowe przeznaczenie.</p>" &
+              "<div style='height:14px;margin:0 0 24px;background-color:#17150F;background-image:repeating-linear-gradient(to right,transparent 0 7px,#EFEDE4 7px 15px)'></div>"
+            PaddingRight: =4.50
+            PaddingTop: =4.50
+            Size: =11.70
+            Width: =1329
+            X: =26.99
+      - Pula:
+          Control: HtmlViewer@2.1.0
+          Properties:
+            Font: =Font.'Open Sans'
+            Height: =30
+            HtmlText: |+
+              ="<p style='font-family:Consolas,monospace;font-size:12px;letter-spacing:.04em;color:#8B8677;margin:0'>" &
+              With({fresh: CountRows(Filter(colPool As f, !(f.FilmId in colSeen.FilmId))),
+                    pool: CountRows(colPool), all: CountRows(colFilms)},
+              If(pool = 0,     "brak dopasowań, zdejmij filtr",
+                 fresh < pool, fresh & " jeszcze do wylosowania z " & pool & " w puli" & If(pool < all, " (" & all & " ogółem)", ""),
+                 pool < all,   pool & " z " & all & " tytułów w puli",
+                               pool & " tytułów w puli")) &
+              "</p>"
+            PaddingRight: =4.50
+            Size: =11.70
+            Width: =394
+            X: =26
+            Y: =355
+      - Nastrój:
+          Control: HtmlViewer@2.1.0
+          Properties:
+            Font: =Font.'Open Sans'
+            Height: =30
+            HtmlText: ="<p style='font-family:Consolas,monospace;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:#8B8677;margin:0'>Wybierz nastrój po całym tygodniu</p>"
+            Size: =11.70
+            Width: =402
+            X: =26
+            Y: =225
+      - Machlujka:
+          Control: Classic/Button@2.2.0
+          Properties:
+            BorderColor: =If(gblWeek = "machlujka", RGBA(23, 21, 15, 1), RGBA(216, 211, 196, 1))
+            BorderThickness: =1
+            Color: =If(gblWeek = "machlujka", RGBA(251, 248, 242, 1), RGBA(74, 70, 60, 1))
+            DisabledBorderColor: =RGBA(166, 166, 166, 1)
+            Fill: =If(gblWeek = "machlujka", RGBA(23, 21, 15, 1), RGBA(0, 0, 0, 0))
+            FocusedBorderThickness: =1
+            Font: =Font.'Open Sans'
+            Height: =30
+            HoverBorderColor: =If(gblWeek = "machlujka", RGBA(23, 21, 15, 1), RGBA(166, 35, 26, 1))
+            HoverColor: =If(gblWeek = "machlujka", RGBA(251, 248, 242, 1), RGBA(23, 21, 15, 1))
+            HoverFill: =If(gblWeek = "machlujka", RGBA(23, 21, 15, 1), RGBA(232, 229, 219, 1))
+            OnSelect: |+
+              =If(gblWeek = "machlujka",
+                  Set(gblWeek, ""); ClearCollect(colPool, colFilms),
+                  Set(gblWeek, "machlujka");
+                  ClearCollect(colPool, Filter(colFilms As f, "Komedia" in f.Nastroje || "Musicale" in f.Nastroje))
+              );
+              Clear(colSeen); Set(gblHasPick, false)
+            PressedBorderColor: =RGBA(23, 21, 15, 1)
+            PressedColor: =RGBA(251, 248, 242, 1)
+            PressedFill: =RGBA(23, 21, 15, 1)
+            Size: =8.09
+            Text: ="Machlujka"
+            Width: =72
+            X: =211
+            Y: =255
+      - Fujka:
+          Control: Classic/Button@2.2.0
+          Properties:
+            BorderColor: =RGBA(216, 211, 196, 1)
+            BorderThickness: =1
+            Color: =If(gblWeek = "fujka", RGBA(251, 248, 242, 1), RGBA(74, 70, 60, 1))
+            DisabledBorderColor: =RGBA(166, 166, 166, 1)
+            Fill: =If(gblWeek = "fujka", RGBA(23, 21, 15, 1), RGBA(0, 0, 0, 0))
+            FocusedBorderThickness: =1
+            Font: =Font.'Open Sans'
+            Height: =30
+            HoverBorderColor: =If(gblWeek = "fujka", RGBA(23, 21, 15, 1), RGBA(166, 35, 26, 1))
+            HoverColor: =If(gblWeek = "fujka", RGBA(251, 248, 242, 1), RGBA(23, 21, 15, 1))
+            HoverFill: =If(gblWeek = "fujka", RGBA(23, 21, 15, 1), RGBA(232, 229, 219, 1))
+            OnSelect: |+
+              =If(gblWeek = "fujka",
+                  Set(gblWeek, ""); ClearCollect(colPool, colFilms),
+                  Set(gblWeek, "fujka");
+                  ClearCollect(colPool, Filter(colFilms As f, "Obyczajowe" in f.Nastroje || "Kostium" in f.Nastroje))
+              );
+              Clear(colSeen); Set(gblHasPick, false)
+            PressedBorderColor: =RGBA(23, 21, 15, 1)
+            PressedColor: =RGBA(251, 248, 242, 1)
+            PressedFill: = RGBA(23, 21, 15, 1)
+            Size: =8.09
+            Text: ="Fujka"
+            Width: =72
+            X: =121
+            Y: =255
+      - Psujka:
+          Control: Classic/Button@2.2.0
+          Properties:
+            BorderColor: =RGBA(216, 211, 196, 1)
+            BorderThickness: =1
+            Color: =If(gblWeek = "psujka", RGBA(251, 248, 242, 1), RGBA(74, 70, 60, 1))
+            DisabledBorderColor: =RGBA(166, 166, 166, 1)
+            Fill: =If(gblWeek = "psujka", RGBA(23, 21, 15, 1), RGBA(0, 0, 0, 0))
+            FocusedBorderThickness: =1
+            Font: =Font.'Open Sans'
+            Height: =30
+            HoverBorderColor: =If(gblWeek = "psujka", RGBA(23, 21, 15, 1), RGBA(166, 35, 26, 1))
+            HoverColor: =If(gblWeek = "psujka", RGBA(251, 248, 242, 1), RGBA(23, 21, 15, 1))
+            HoverFill: =If(gblWeek = "psujka", RGBA(23, 21, 15, 1), RGBA(232, 229, 219, 1))
+            OnSelect: =ClearCollect(colPool, Filter(colFilms As f, "Wojna" in f.Nastroje || "PRL" in f.Nastroje || "Kryminał" in f.Nastroje || "Egzystencjalne" in f.Nastroje || "Surrealizm" in f.Nastroje || "Fantastyka" in f.Nastroje))
+            PressedBorderColor: =RGBA(23, 21, 15, 1)
+            PressedColor: =RGBA(251, 248, 242, 1)
+            PressedFill: =RGBA(23, 21, 15, 1)
+            Size: =8.09
+            Text: ="Psujka"
+            Width: =72
+            X: =31
+            Y: =255
+      - WyczyśćFiltry:
+          Control: Classic/Button@2.2.0
+          Properties:
+            BorderColor: =RGBA(216, 211, 196, 1)
+            BorderThickness: =3
+            Color: =RGBA(74, 70, 60, 1)
+            DisabledBorderColor: =RGBA(166, 166, 166, 1)
+            Fill: =RGBA(0, 0, 0, 0)
+            FocusedBorderColor: =RGBA(0, 0, 0, 0)
+            FocusedBorderThickness: =false
+            Font: =Font.'Open Sans'
+            FontWeight: =FontWeight.Bold
+            Height: =42
+            HoverBorderColor: =RGBA(74, 70, 60, 1)
+            HoverColor: =RGBA(0, 0, 0, 1)
+            HoverFill: =RGBA(0, 0, 0, 0)
+            OnSelect: =Set(gblWeek, ""); ClearCollect(colPool, colFilms); Clear(colSeen); Set(gblHasPick, false)
+            PressedBorderColor: =RGBA(0, 0, 0, 0)
+            PressedColor: =RGBA(0, 0, 0, 1)
+            PressedFill: =RGBA(239, 237, 228, 1)
+            RadiusBottomLeft: =0
+            RadiusBottomRight: =0
+            RadiusTopLeft: =0
+            RadiusTopRight: =0
+            Size: =10
+            Text: ="Wyczyść filtry"
+            Width: =118
+            X: =168
+            Y: =301
+      - movie:
+          Control: Image@2.2.3
+          Properties:
+            BorderColor: =RGBA(0, 18, 107, 1)
+            FlipHorizontal: =true
+            Height: =244
+            Image: ='giphy (6)'
+            PaddingRight: =0.00
+            PaddingTop: =0.00
+            Visible: =gblSpinLeft > 0
+            Width: =268
+            X: =973
+            Y: =441
+      - BiletOcen:
+          Control: HtmlViewer@2.1.0
+          Properties:
+            Font: =Font.'Open Sans'
+            Height: =103
+            HtmlText: "=\"<div style='position:relative;height:88px;background:#F8F6F0;box-sizing:border-box;margin:0;font-family:Consolas,monospace'>\" &\r\n\"<div style='position:absolute;left:0;right:0;top:0;height:7px;background-image:radial-gradient(circle at 7px 0px, #EFEDE4 6px, transparent 6.5px);background-size:14px 7px'></div>\" &\r\n\"<div style='position:absolute;left:0;right:0;bottom:0;height:7px;background-image:radial-gradient(circle at 7px 7px, #EFEDE4 6px, transparent 6.5px);background-size:14px 7px'></div>\" &\r\n\"<div style='position:absolute;left:0;top:7px;bottom:7px;width:58px;background:#A6231A'></div>\" &\r\n\"<div style='position:absolute;left:58px;top:7px;bottom:7px;border-left:2px dashed #EFEDE4'></div>\" &\r\n\"<div style='position:absolute;left:4px;top:50%;transform:translateY(-50%) rotate(-90deg);width:52px;text-align:center;font-size:12px;letter-spacing:.24em;color:#FBF8F2'>OCENA</div>\" &\r\n\"<div style='position:absolute;left:78px;right:14px;top:50%;transform:translateY(-50%);white-space:wrap;font-size:12px;letter-spacing:.20em;color:#8B8677'>Wybierz z listy film, oceń i pomóż innym wybrać!</div>\" "
+            PaddingRight: =4.50
+            Size: =12.60
+            Width: =237
+            X: =1110
+            Y: =40
+      - OcenFilm:
+          Control: Classic/Button@2.2.0
+          Properties:
+            BorderColor: =RGBA(216, 211, 196, 1)
+            BorderThickness: =0
+            Color: =RGBA(23, 21, 15, 1)
+            DisabledBorderColor: =RGBA(166, 166, 166, 1)
+            DisabledFill: =RGBA(0, 0, 0, 0)
+            Fill: =RGBA(0, 0, 0, 0)
+            FocusedBorderColor: =RGBA(0, 0, 0, 0)
+            FocusedBorderThickness: =false
+            Font: =Font.'Open Sans'
+            FontWeight: =FontWeight.Bold
+            Height: =55
+            HoverBorderColor: =RGBA(0,0,0,0)
+            HoverColor: =RGBA(0,0,0,0)
+            HoverFill: =RGBA(0,0,0,0)
+            OnSelect: |-
+              =Set(gblFilmDoOcenyId, "");
+              Navigate(EkranOcen, ScreenTransition.Fade)
+            PaddingRight: =4.50
+            PressedBorderColor: =RGBA(0,0,0,0)
+            PressedColor: =RGBA(0,0,0,0)
+            PressedFill: =RGBA(0,0,0,0)
+            RadiusBottomLeft: =0
+            RadiusBottomRight: =0
+            RadiusTopLeft: =0
+            RadiusTopRight: =0
+            Size: =9.90
+            Text: =""
+            Width: =151
+            X: =1180
+            Y: =64
+      - Oceny:
+          Control: HtmlViewer@2.1.0
+          Properties:
+            DisabledBorderColor: =RGBA(0, 0, 0, 0)
+            Font: =Font.'Open Sans'
+            Height: =85
+            HoverBorderColor: =RGBA(23, 21, 15, 0)
+            HtmlText: |-
+              =With({sr: Average(Filter(colRecenzje As r, r.FilmId = gblPick.FilmId) As q, q.Ocena), ile: CountRows(Filter(colRecenzje As r, r.FilmId = gblPick.FilmId))},
+              If(ile > 0,
+              "<div style='display:block;box-sizing:border-box;height:74px;padding:6px 0 0 0;font-family:Segoe UI,sans-serif;text-align:right'>" &
+              "<div style='display:inline-block;text-align:center'>" &
+              "<div style='font-family:Consolas,monospace;font-style:italic;font-size:12px;line-height:18px;letter-spacing:.12em;text-transform:uppercase;color:#8B8677;white-space:nowrap;padding-left:2px'>" & Text(sr, "0") & " / 5 &nbsp;&nbsp; " & ile & If(ile = 1, " ocena", " ocen") & "</div>" &
+              "<div style='font-size:34px;line-height:40px;letter-spacing:.12em;color:#C9A227;white-space:nowrap'>" & Left("★★★★★", RoundDown(sr, 0)) & "<span style='color:#D8D3C4'>" & Left("☆☆☆☆☆", 5 - RoundDown(sr, 0)) & "</span></div>" &
+              "</div>" &
+              "</div>",
+              "<div style='position:relative;height:74px;background:#F8F6F0;box-sizing:border-box;margin:0;font-family:Consolas,monospace'>" &
+              "<div style='position:absolute;left:0;right:0;top:0;height:5px;background-image:radial-gradient(circle at 5px 0px, #EFEDE4 4px, transparent 4.5px);background-size:10px 5px'></div>" &
+              "<div style='position:absolute;left:0;right:0;bottom:0;height:5px;background-image:radial-gradient(circle at 5px 5px, #EFEDE4 4px, transparent 4.5px);background-size:10px 5px'></div>" &
+              "<div style='position:absolute;left:0;right:0;top:50%;transform:translateY(-50%);text-align:center;font-size:11px;line-height:1.4;letter-spacing:.12em;text-transform:uppercase;color:#8B8677;padding:0 26px'>Nikt tego jeszcze nie ocenił, kliknij i bądź bohaterem!</div>" &
+              "</div>"))
+            PaddingRight: =4.50
+            Size: =11
+            Tooltip: ="Przejdź do sekcji z oceną"
+            Visible: = gblHasPick && gblSpinLeft = 0
+            Width: =268
+            X: =599
+            Y: =292
+      - KlikGwiazdki:
+          Control: Classic/Button@2.2.0
+          Properties:
+            BorderColor: =RGBA(0,0,0,0)
+            Color: =RGBA(255, 255, 255, 1)
+            DisabledBorderColor: =RGBA(0, 0, 0, 0)
+            DisabledFill: =RGBA(0, 0, 0, 0)
+            Fill: =RGBA(0,0,0,0)
+            Font: =Font.'Open Sans'
+            Height: =70
+            HoverBorderColor: =RGBA(0,0,0,0)
+            HoverColor: =RGBA(0,0,0,0)
+            HoverFill: =RGBA(0,0,0,0)
+            OnSelect: |-
+              =Set(gblPickId, gblPick.FilmId);
+              Set(gblFilmDoOcenyId, gblPick.FilmId);
+              If(CountRows(Filter(colRecenzje As r, r.FilmId = gblPick.FilmId)) > 0,
+                  Navigate(EkranRecenzji, ScreenTransition.Fade),
+                  Navigate(EkranOcen, ScreenTransition.Fade)
+              )
+            PressedBorderColor: =RGBA(0,0,0,0)
+            PressedColor: =RGBA(237, 237, 237, 1)
+            PressedFill: =RGBA(0,0,0,0)
+            Size: =13.49
+            Text: =
+            Tooltip: |-
+              =If(CountRows(Filter(colRecenzje As r, r.FilmId = gblPick.FilmId)) > 0,
+                  "Kliknij, aby zobaczyć recenzje",
+                  "Oceń jako pierwszy")
+            Visible: =gblHasPick && gblSpinLeft = 0
+            Width: =263
+            X: =599
+            Y: =298

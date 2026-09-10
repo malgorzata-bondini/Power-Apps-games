@@ -1,0 +1,244 @@
+Screens:
+  WyborOsob:
+    Properties:
+      Fill: =RGBA(163,33,39,1)
+      LoadingSpinnerColor: =RGBA(242,193,78,1)
+      OnVisible: =Refresh('Team Members'); ClearCollect(colOsoby, ForAll('Team Members' As o, {Imie:o.Title}))
+    Children:
+      - TloOsoby:
+          Control: HtmlViewer@2.1.0
+          Properties:
+            Height: =Parent.Height
+            HtmlText: ="<div style='width:100%;height:" & Round(Self.Height - 16, 0) & "px;background:repeating-linear-gradient(90deg,#A32127 0 64px,#951C22 64px 128px)'></div>"
+            PaddingLeft: =0
+            PaddingTop: =0
+            Width: =Parent.Width
+      - WrocZOsob:
+          Control: Classic/Button@2.2.0
+          Properties:
+            BorderColor: =RGBA(242,193,78,0.45)
+            BorderThickness: =1
+            Color: =RGBA(230,191,168,0.9)
+            Fill: =RGBA(0,0,0,0)
+            FontWeight: =FontWeight.Bold
+            Height: =34
+            HoverBorderColor: =RGBA(242,193,78,0.9)
+            HoverColor: =RGBA(255,243,214,1)
+            HoverFill: =RGBA(242,193,78,0.18)
+            OnSelect: =Navigate(Wybory, ScreenTransition.UnCoverRight)
+            PressedBorderColor: =RGBA(242,193,78,1)
+            PressedColor: =RGBA(38,20,15,1)
+            PressedFill: =RGBA(242,193,78,0.62)
+            RadiusBottomLeft: =18
+            RadiusBottomRight: =18
+            RadiusTopLeft: =18
+            RadiusTopRight: =18
+            Size: =11
+            Text: ="WRÓĆ DO LOSOWANIA"
+            Width: =192
+            X: =32
+            Y: =28
+      - NaglowekOsoby:
+          Control: HtmlViewer@2.1.0
+          Properties:
+            AutoHeight: =true
+            HtmlText: ="<div style='font-family:Segoe UI,sans-serif;text-align:center'><p style='font-family:Consolas,monospace;font-size:16px;font-weight:700;letter-spacing:.38em;text-transform:uppercase;color:#F2C14E;margin:0 0 10px'>Kto gra</p><h1 style='font-family:Georgia,serif;font-weight:400;font-size:30px;line-height:1.04;color:#FFF3D6;margin:0 0 12px'>Wybierz uczestników</h1><p style='font-size:16px;line-height:1.5;color:#E6BFA8;margin:0 auto;max-width:60ch'>Kliknij osobę po lewej, aby dodać ją do losowania. Tylko osoby po prawej będą losowane do pytań. Kliknij kafelek po prawej, aby usunąć osobę.</p></div>"
+            PaddingLeft: =0
+            PaddingTop: =0
+            Width: =Min(Parent.Width - 64, 1160)
+            X: =(Parent.Width - Self.Width) / 2
+            Y: =44
+      - RamkaLewa:
+          Control: HtmlViewer@2.1.0
+          Properties:
+            Height: =Min(620, Parent.Height - Self.Y - 40)
+            HtmlText: ="<div style='background:rgba(0,0,0,.22);border:1px solid rgba(242,193,78,.55);border-radius:16px;box-sizing:border-box;width:100%;height:" & Round(Self.Height - 16, 0) & "px'></div>"
+            PaddingLeft: =0
+            PaddingTop: =0
+            Width: =(Min(Parent.Width - 64, 1160) - 48) / 2
+            X: =(Parent.Width - Min(Parent.Width - 64, 1160)) / 2
+            Y: =NaglowekOsoby.Y + NaglowekOsoby.Height + 18
+      - RamkaPrawa:
+          Control: HtmlViewer@2.1.0
+          Properties:
+            Height: =RamkaLewa.Height
+            HtmlText: ="<div style='background:rgba(0,0,0,.22);border:1px solid rgba(47,163,107,.6);border-radius:16px;box-sizing:border-box;width:100%;height:" & Round(Self.Height - 16, 0) & "px'></div>"
+            PaddingLeft: =0
+            PaddingTop: =0
+            Width: =RamkaLewa.Width
+            X: =RamkaLewa.X + RamkaLewa.Width + 48
+            Y: =RamkaLewa.Y
+      - NapisPula:
+          Control: Label@2.5.1
+          Properties:
+            Color: =RGBA(242,193,78,1)
+            FontWeight: =FontWeight.Bold
+            Height: =24
+            Size: =12
+            Text: ="PULA OSÓB  (" & CountRows(Filter(colOsoby As o, !(o.Imie in colGracze.Imie))) & ")"
+            Width: =RamkaLewa.Width - 44
+            X: =RamkaLewa.X + 22
+            Y: =RamkaLewa.Y + 22
+      - NapisGracze:
+          Control: Label@2.5.1
+          Properties:
+            Color: =RGBA(47,163,107,1)
+            FontWeight: =FontWeight.Bold
+            Height: =24
+            Size: =12
+            Text: ="KOGO DZIŚ PYTAMY?  (" & CountRows(colGracze) & ")"
+            Width: =RamkaPrawa.Width - 44
+            X: =RamkaPrawa.X + 22
+            Y: =RamkaPrawa.Y + 22
+      - PustaPula:
+          Control: Label@2.5.1
+          Properties:
+            Align: =Align.Center
+            Color: =RGBA(230,191,168,0.6)
+            Height: =60
+            Italic: =true
+            Size: =12
+            Text: =If(CountRows(colOsoby) = 0, "Lista Team Members jest pusta albo nie jest podpięta w Data.", "Wszyscy są już po prawej stronie.")
+            Visible: =CountRows(Filter(colOsoby As o, !(o.Imie in colGracze.Imie))) = 0
+            Width: =RamkaLewa.Width - 60
+            X: =RamkaLewa.X + 30
+            Y: =RamkaLewa.Y + 150
+      - PustaLista:
+          Control: Label@2.5.1
+          Properties:
+            Align: =Align.Center
+            Color: =RGBA(230,191,168,0.6)
+            Height: =60
+            Italic: =true
+            Size: =12
+            Text: ="Nikt jeszcze nie został wybrany. Kliknij kafelki po lewej."
+            Visible: =CountRows(colGracze) = 0
+            Width: =RamkaPrawa.Width - 60
+            X: =RamkaPrawa.X + 30
+            Y: =RamkaPrawa.Y + 150
+      - GaleriaPula:
+          Control: Gallery@2.15.0
+          Variant: Vertical
+          Properties:
+            Height: =RamkaLewa.Height - 160
+            Items: =Sort(Filter(colOsoby As o, !(o.Imie in colGracze.Imie)), Imie)
+            LoadingSpinner: =LoadingSpinner.None
+            TemplatePadding: =6
+            TemplateSize: =54
+            Width: =RamkaLewa.Width - 44
+            X: =RamkaLewa.X + 22
+            Y: =NapisPula.Y + 32
+          Children:
+            - KafelekPula:
+                Control: Classic/Button@2.2.0
+                Properties:
+                  BorderColor: =RGBA(242,193,78,0.45)
+                  BorderThickness: =1
+                  Color: =RGBA(255,243,214,1)
+                  Fill: =RGBA(0,0,0,0.22)
+                  Height: =48
+                  HoverBorderColor: =RGBA(242,193,78,1)
+                  HoverColor: =RGBA(38,20,15,1)
+                  HoverFill: =RGBA(242,193,78,1)
+                  OnSelect: =Collect(colGracze, {Imie:ThisItem.Imie})
+                  PressedBorderColor: =RGBA(242,193,78,1)
+                  PressedColor: =RGBA(38,20,15,1)
+                  PressedFill: =RGBA(216,168,60,1)
+                  RadiusBottomLeft: =12
+                  RadiusBottomRight: =12
+                  RadiusTopLeft: =12
+                  RadiusTopRight: =12
+                  Size: =13
+                  Text: =ThisItem.Imie
+                  Width: =Parent.TemplateWidth - 16
+                  X: =8
+      - GaleriaGracze:
+          Control: Gallery@2.15.0
+          Variant: Vertical
+          Properties:
+            Height: =RamkaPrawa.Height - 160
+            Items: =Sort(colGracze, Imie)
+            LoadingSpinner: =LoadingSpinner.None
+            TemplatePadding: =6
+            TemplateSize: =54
+            Width: =RamkaPrawa.Width - 44
+            X: =RamkaPrawa.X + 22
+            Y: =NapisGracze.Y + 32
+          Children:
+            - KafelekGracz:
+                Control: Classic/Button@2.2.0
+                Properties:
+                  BorderColor: =RGBA(47,163,107,0.7)
+                  BorderThickness: =1
+                  Color: =RGBA(255,243,214,1)
+                  Fill: =RGBA(47,163,107,0.32)
+                  Height: =48
+                  HoverBorderColor: =RGBA(255,138,43,1)
+                  HoverColor: =RGBA(38,20,15,1)
+                  HoverFill: =RGBA(255,138,43,1)
+                  OnSelect: =RemoveIf(colGracze, Imie = ThisItem.Imie)
+                  PressedBorderColor: =RGBA(255,138,43,1)
+                  PressedColor: =RGBA(38,20,15,1)
+                  PressedFill: =RGBA(214,110,30,1)
+                  RadiusBottomLeft: =12
+                  RadiusBottomRight: =12
+                  RadiusTopLeft: =12
+                  RadiusTopRight: =12
+                  Size: =13
+                  Text: =ThisItem.Imie
+                  Width: =Parent.TemplateWidth - 16
+                  X: =8
+      - DodajWszystkich:
+          Control: Classic/Button@2.2.0
+          Properties:
+            BorderThickness: =0
+            Color: =RGBA(38,20,15,1)
+            DisabledColor: =RGBA(38,20,15,0.35)
+            DisabledFill: =RGBA(242,193,78,0.25)
+            DisplayMode: =If(CountRows(Filter(colOsoby As o, !(o.Imie in colGracze.Imie))) > 0, DisplayMode.Edit, DisplayMode.Disabled)
+            Fill: =RGBA(242,193,78,1)
+            FontWeight: =FontWeight.Bold
+            Height: =44
+            HoverColor: =RGBA(38,20,15,1)
+            HoverFill: =RGBA(255,213,120,1)
+            OnSelect: =ForAll(Filter(colOsoby As o, !(o.Imie in colGracze.Imie)) As n, Collect(colGracze, {Imie:n.Imie}))
+            PressedColor: =RGBA(38,20,15,1)
+            PressedFill: =RGBA(216,168,60,1)
+            RadiusBottomLeft: =22
+            RadiusBottomRight: =22
+            RadiusTopLeft: =22
+            RadiusTopRight: =22
+            Size: =12
+            Text: ="DODAJ WSZYSTKICH  →"
+            Width: =RamkaLewa.Width - 44
+            X: =RamkaLewa.X + 22
+            Y: =RamkaLewa.Y + RamkaLewa.Height - 84
+      - UsunWszystkich:
+          Control: Classic/Button@2.2.0
+          Properties:
+            BorderColor: =RGBA(242,193,78,0.45)
+            BorderThickness: =1
+            Color: =RGBA(230,191,168,0.9)
+            DisabledBorderColor: =RGBA(242,193,78,0.2)
+            DisabledColor: =RGBA(230,191,168,0.35)
+            DisabledFill: =RGBA(0,0,0,0)
+            DisplayMode: =If(CountRows(colGracze) > 0, DisplayMode.Edit, DisplayMode.Disabled)
+            Fill: =RGBA(0,0,0,0)
+            FontWeight: =FontWeight.Bold
+            Height: =44
+            HoverBorderColor: =RGBA(242,193,78,0.9)
+            HoverColor: =RGBA(255,243,214,1)
+            HoverFill: =RGBA(242,193,78,0.18)
+            OnSelect: =Clear(colGracze); Set(gblOsoba, ""); Set(gblPowtorka, 0)
+            PressedBorderColor: =RGBA(242,193,78,1)
+            PressedColor: =RGBA(38,20,15,1)
+            PressedFill: =RGBA(242,193,78,0.62)
+            RadiusBottomLeft: =22
+            RadiusBottomRight: =22
+            RadiusTopLeft: =22
+            RadiusTopRight: =22
+            Size: =12
+            Text: ="←  USUŃ WSZYSTKICH"
+            Width: =RamkaPrawa.Width - 44
+            X: =RamkaPrawa.X + 22
+            Y: =DodajWszystkich.Y

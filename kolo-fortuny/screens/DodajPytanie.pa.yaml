@@ -1,0 +1,343 @@
+Screens:
+  DodajPytanie:
+    Properties:
+      Fill: =RGBA(163,33,39,1)
+      LoadingSpinnerColor: =RGBA(0, 120, 212, 1)
+      OnVisible: =Set(gblDodano, false); Reset(PoleIntro); Reset(PoleOpcjaA); Reset(PoleOpcjaB)
+    Children:
+      - TloDodaj:
+          Control: HtmlViewer@2.1.0
+          Properties:
+            Height: =Parent.Height
+            HtmlText: ="<div style='width:100%;height:" & Round(Self.Height - 16, 0) & "px;background:repeating-linear-gradient(90deg,#A32127 0 64px,#951C22 64px 128px)'></div>"
+            PaddingLeft: =0
+            PaddingTop: =0
+            Width: =Parent.Width
+      - WrocDoKola:
+          Control: Classic/Button@2.2.0
+          Properties:
+            BorderColor: =RGBA(242,193,78,0.45)
+            BorderThickness: =1
+            Color: =RGBA(230,191,168,0.9)
+            Fill: =RGBA(0,0,0,0)
+            FontWeight: =FontWeight.Bold
+            Height: =34
+            HoverBorderColor: =RGBA(242,193,78,0.9)
+            HoverColor: =RGBA(255,243,214,1)
+            HoverFill: =RGBA(242,193,78,0.18)
+            OnSelect: =Navigate(Wybory, ScreenTransition.UnCoverRight)
+            PressedBorderColor: =RGBA(242,193,78,1)
+            PressedColor: =RGBA(38,20,15,1)
+            PressedFill: =RGBA(242,193,78,0.62)
+            RadiusBottomLeft: =18
+            RadiusBottomRight: =18
+            RadiusTopLeft: =18
+            RadiusTopRight: =18
+            Size: =11
+            Text: ="WRÓĆ DO LOSOWANIA"
+            Width: =192
+            X: =32
+            Y: =28
+      - NapisStatus:
+          Control: Label@2.5.1
+          Properties:
+            Align: =Align.Center
+            Color: =RGBA(242,193,78,1)
+            Height: =26
+            Text: ="Dodano! Pytanie jest już w puli pytań."
+            Visible: =gblDodano
+            Width: =RamkaFormularza.Width
+            X: =RamkaFormularza.X
+            Y: =DodajDoPuli.Y + DodajDoPuli.Height + 10
+      - OstrzezenieDuplikat:
+          Control: Label@2.5.1
+          Properties:
+            Align: =Align.Center
+            Color: =RGBA(255,138,43,1)
+            Height: =22
+            Italic: =true
+            Size: =12
+            Text: ="Takie pytanie już istnieje!"
+            Visible: =Len(Trim(PoleOpcjaA.Text)) > 0 && CountRows(Filter(colPytania As q, q.Temat = WyborKategorii.Selected.Value && ((Lower(Trim(q.A)) = Lower(Trim(PoleOpcjaA.Text)) && Lower(Trim(q.B)) = Lower(Trim(If(WyborKategorii.Selected.Value = "Otwarte", "", PoleOpcjaB.Text)))) || (Lower(Trim(q.B)) = Lower(Trim(PoleOpcjaA.Text)) && Lower(Trim(q.A)) = Lower(Trim(If(WyborKategorii.Selected.Value = "Otwarte", "", PoleOpcjaB.Text))))))) > 0
+            Width: =RamkaFormularza.Width - 56
+            X: =RamkaFormularza.X + 28
+            Y: =DodajDoPuli.Y + DodajDoPuli.Height + 10
+      - NaglowekDodaj:
+          Control: HtmlViewer@2.1.0
+          Properties:
+            AutoHeight: =true
+            HtmlText: ="<div style='font-family:Segoe UI,sans-serif;text-align:center'><p style='font-family:Consolas,monospace;font-size:16px;font-weight:700;letter-spacing:.38em;text-transform:uppercase;color:#F2C14E;margin:0 0 10px'>Twoja kolej</p><h1 style='font-family:Georgia,serif;font-weight:400;font-size:30px;line-height:1.04;color:#FFF3D6;margin:0 0 12px'>Dodaj pytanie do puli</h1><p style='font-size:16px;line-height:1.5;color:#E6BFA8;margin:0 auto;max-width:60ch'>Wybierz kategorię i wpisz swoje pytanie. Po prawej znajduje się lista pytań w puli, pogrupowana zgodnie z kategorią.</p></div>"
+            PaddingLeft: =0
+            PaddingTop: =0
+            Width: =Min(Parent.Width - 64, 1160)
+            X: =(Parent.Width - Self.Width) / 2
+            Y: =44
+      - RamkaFormularza:
+          Control: HtmlViewer@2.1.0
+          Properties:
+            Height: =If(WyborKategorii.Selected.Value = "Otwarte", 410, 496)
+            HtmlText: ="<div style='background:rgba(0,0,0,.22);border:1px solid rgba(242,193,78,.55);border-radius:16px;box-sizing:border-box;width:100%;height:" & Round(Self.Height - 16, 0) & "px'></div>"
+            PaddingLeft: =0
+            PaddingTop: =0
+            Width: =(Min(Parent.Width - 64, 1160) - 48) / 2
+            X: =(Parent.Width - Min(Parent.Width - 64, 1160)) / 2
+            Y: =NaglowekDodaj.Y + NaglowekDodaj.Height + 18
+      - NapisKategoria:
+          Control: Label@2.5.1
+          Properties:
+            Color: =RGBA(242,193,78,1)
+            FontWeight: =FontWeight.Bold
+            Height: =22
+            Size: =12
+            Text: ="KATEGORIA"
+            Width: =240
+            X: =RamkaFormularza.X + 28
+            Y: =RamkaFormularza.Y + 24
+      - NapisIntro:
+          Control: Label@2.5.1
+          Properties:
+            Color: =RGBA(242,193,78,1)
+            FontWeight: =FontWeight.Bold
+            Height: =22
+            Size: =12
+            Text: ="WSTĘP"
+            Width: =300
+            X: =RamkaFormularza.X + 28
+            Y: =WyborKategorii.Y + WyborKategorii.Height + 16
+      - PoleIntro:
+          Control: Classic/TextInput@2.3.2
+          Properties:
+            BorderColor: =RGBA(242,193,78,0.55)
+            BorderThickness: =1
+            Color: =RGBA(38,20,15,1)
+            Default: =""
+            Fill: =RGBA(255,243,214,1)
+            Height: =44
+            HintText: ="np. Mój pewniak rano to..."
+            MaxLength: =40
+            RadiusBottomLeft: =8
+            RadiusBottomRight: =8
+            RadiusTopLeft: =8
+            RadiusTopRight: =8
+            Width: =RamkaFormularza.Width - 56
+            X: =RamkaFormularza.X + 28
+            Y: =NapisIntro.Y + 26
+      - LicznikIntro:
+          Control: Label@2.5.1
+          Properties:
+            Align: =Align.Right
+            Color: =If(Len(PoleIntro.Text) >= 40, RGBA(242,193,78,1), RGBA(230,191,168,0.7))
+            Height: =22
+            Size: =10
+            Text: =Len(PoleIntro.Text) & " / 40"
+            Width: =RamkaFormularza.Width - 56
+            X: =RamkaFormularza.X + 28
+            Y: =NapisIntro.Y
+      - NapisOpcjaA:
+          Control: Label@2.5.1
+          Properties:
+            Color: =RGBA(242,193,78,1)
+            FontWeight: =FontWeight.Bold
+            Height: =22
+            Size: =12
+            Text: =If(WyborKategorii.Selected.Value = "Otwarte", "TWOJE PYTANIE *", "OPCJA A *")
+            Width: =300
+            X: =RamkaFormularza.X + 28
+            Y: =WyborKategorii.Y + WyborKategorii.Height + 102
+      - PoleOpcjaA:
+          Control: Classic/TextInput@2.3.2
+          Properties:
+            BorderColor: =RGBA(242,193,78,0.55)
+            BorderThickness: =1
+            Color: =RGBA(38,20,15,1)
+            Default: =""
+            Fill: =RGBA(255,243,214,1)
+            Height: =44
+            HintText: =If(WyborKategorii.Selected.Value = "Otwarte", "np. Jaki serial obejrzysz drugi raz od zera?", "np. Kawa")
+            MaxLength: =If(WyborKategorii.Selected.Value = "Otwarte", 75, 30)
+            RadiusBottomLeft: =8
+            RadiusBottomRight: =8
+            RadiusTopLeft: =8
+            RadiusTopRight: =8
+            Width: =RamkaFormularza.Width - 56
+            X: =RamkaFormularza.X + 28
+            Y: =NapisOpcjaA.Y + 26
+      - LicznikA:
+          Control: Label@2.5.1
+          Properties:
+            Align: =Align.Right
+            Color: =If(Len(PoleOpcjaA.Text) >= If(WyborKategorii.Selected.Value = "Otwarte", 75, 30), RGBA(242,193,78,1), RGBA(230,191,168,0.7))
+            Height: =22
+            Size: =10
+            Text: =Len(PoleOpcjaA.Text) & " / " & If(WyborKategorii.Selected.Value = "Otwarte", 75, 30)
+            Width: =RamkaFormularza.Width - 56
+            X: =RamkaFormularza.X + 28
+            Y: =NapisOpcjaA.Y
+      - NapisOpcjaB:
+          Control: Label@2.5.1
+          Properties:
+            Color: =RGBA(242,193,78,1)
+            FontWeight: =FontWeight.Bold
+            Height: =22
+            Size: =12
+            Text: ="OPCJA B *"
+            Visible: =WyborKategorii.Selected.Value <> "Otwarte"
+            Width: =300
+            X: =RamkaFormularza.X + 28
+            Y: =WyborKategorii.Y + WyborKategorii.Height + 188
+      - PoleOpcjaB:
+          Control: Classic/TextInput@2.3.2
+          Properties:
+            BorderColor: =RGBA(242,193,78,0.55)
+            BorderThickness: =1
+            Color: =RGBA(38,20,15,1)
+            Default: =""
+            Fill: =RGBA(255,243,214,1)
+            Height: =44
+            HintText: ="np. Herbata"
+            MaxLength: =30
+            RadiusBottomLeft: =8
+            RadiusBottomRight: =8
+            RadiusTopLeft: =8
+            RadiusTopRight: =8
+            Visible: =WyborKategorii.Selected.Value <> "Otwarte"
+            Width: =RamkaFormularza.Width - 56
+            X: =RamkaFormularza.X + 28
+            Y: =NapisOpcjaB.Y + 26
+      - LicznikB:
+          Control: Label@2.5.1
+          Properties:
+            Align: =Align.Right
+            Color: =If(Len(PoleOpcjaB.Text) >= 30, RGBA(242,193,78,1), RGBA(230,191,168,0.7))
+            Height: =22
+            Size: =10
+            Text: =Len(PoleOpcjaB.Text) & " / 30"
+            Visible: =WyborKategorii.Selected.Value <> "Otwarte"
+            Width: =RamkaFormularza.Width - 56
+            X: =RamkaFormularza.X + 28
+            Y: =NapisOpcjaB.Y
+      - PanelPodgladu:
+          Control: HtmlViewer@2.1.0
+          Properties:
+            Height: =RamkaFormularza.Height
+            HtmlText: |-
+              =With(
+                  {kat: WyborKategorii.Selected.Value},
+                  With(
+                      {n: CountRows(Filter(colPytania, Temat = kat))},
+                      "<div style='background:rgba(0,0,0,.22);border:1px solid rgba(242,193,78,.55);border-radius:16px;box-sizing:border-box;height:" & Round(Self.Height - 16, 0) & "px;padding:22px 20px;overflow-y:auto;font-family:Segoe UI,sans-serif'>"
+                      & If(
+                          Len(kat) = 0 || kat = "Wybierz kategorię...",
+                          "<p style='color:#E6BFA8;font-size:15px;line-height:1.55;margin:0'>Wybierz kategorię po lewej, żeby zobaczyć, co już jest w puli.</p>",
+                          "<p style='font-size:15px;line-height:1.5;color:#E6BFA8;margin:0 0 16px'>W tej kategorii w puli jest <span style='color:#F2C14E;font-weight:700'>" & n & "</span> " & If(n = 1, "pytanie", Mod(n, 10) >= 2 && Mod(n, 10) <= 4 && !(Mod(n, 100) >= 12 && Mod(n, 100) <= 14), "pytania", "pytań") & ":</p>"
+                          & Concat(
+                              Sort(Filter(colPytania, Temat = kat), A) As q,
+                              "<div style='padding:8px 0;border-bottom:1px solid rgba(242,193,78,.14);color:#FFF3D6;font-size:14px;line-height:1.4'>" & If(Len(q.Intro) = 0, "", "<span style='display:block;font-family:Georgia,serif;font-style:italic;font-size:12px;color:#E6BFA8;margin-bottom:2px'>" & Substitute(Substitute(q.Intro, "&", "&amp;"), "<", "&lt;") & "</span>") & Substitute(Substitute(q.A, "&", "&amp;"), "<", "&lt;") & If(Len(q.B) = 0, "", " <span style='color:#F2C14E;font-style:italic'>vs</span> " & Substitute(Substitute(q.B, "&", "&amp;"), "<", "&lt;")) & "</div>"
+                          )
+                      )
+                      & "</div>"
+                  )
+              )
+            PaddingLeft: =0
+            PaddingTop: =0
+            Width: =RamkaFormularza.Width
+            X: =RamkaFormularza.X + RamkaFormularza.Width + 48
+            Y: =RamkaFormularza.Y
+      - DodajDoPuli:
+          Control: Classic/Button@2.2.0
+          Properties:
+            BorderThickness: =0
+            Color: =RGBA(38,20,15,1)
+            DisabledColor: =RGBA(38,20,15,0.35)
+            DisabledFill: =RGBA(242,193,78,0.25)
+            DisplayMode: |-
+              =If(
+                  WyborKategorii.Selected.Value <> "Wybierz kategorię..."
+                  && Len(Trim(PoleOpcjaA.Text)) > 0
+                  && (
+                      WyborKategorii.Selected.Value = "Otwarte"
+                      || (Len(Trim(PoleOpcjaB.Text)) > 0 && Lower(Trim(PoleOpcjaA.Text)) <> Lower(Trim(PoleOpcjaB.Text)))
+                  )
+                  && CountRows(
+                      Filter(
+                          colPytania As q,
+                          q.Temat = WyborKategorii.Selected.Value
+                          && (
+                              (Lower(Trim(q.A)) = Lower(Trim(PoleOpcjaA.Text)) && Lower(Trim(q.B)) = Lower(Trim(If(WyborKategorii.Selected.Value = "Otwarte", "", PoleOpcjaB.Text))))
+                              || (Lower(Trim(q.B)) = Lower(Trim(PoleOpcjaA.Text)) && Lower(Trim(q.A)) = Lower(Trim(If(WyborKategorii.Selected.Value = "Otwarte", "", PoleOpcjaB.Text))))
+                          )
+                      )
+                  ) = 0,
+                  DisplayMode.Edit,
+                  DisplayMode.Disabled
+              )
+            Fill: =RGBA(242,193,78,1)
+            FontWeight: =FontWeight.Bold
+            Height: =44
+            HoverColor: =RGBA(38,20,15,1)
+            HoverFill: =RGBA(255,213,120,1)
+            OnSelect: |-
+              =Collect(
+                  'Pytania Koło Fortuny',
+                  {
+                      Title: WyborKategorii.Selected.Value,
+                      Intro: Trim(PoleIntro.Text),
+                      OpcjaA: Trim(PoleOpcjaA.Text),
+                      OpcjaB: If(WyborKategorii.Selected.Value = "Otwarte", "", Trim(PoleOpcjaB.Text))
+                  }
+              );
+              ClearCollect(colPytania,
+                  ForAll(
+                      'Pytania Koło Fortuny' As r,
+                      {
+                          Id: Text(r.ID),
+                          Temat: r.Title,
+                          A: r.OpcjaA,
+                          B: Coalesce(r.OpcjaB, ""),
+                          Intro: Coalesce(r.Intro, "")
+                      }
+                  )
+              );
+              Reset(PoleIntro);
+              Reset(PoleOpcjaA);
+              Reset(PoleOpcjaB);
+              Set(gblDodano, true)
+            PressedColor: =RGBA(38,20,15,1)
+            PressedFill: =RGBA(216,168,60,1)
+            RadiusBottomLeft: =22
+            RadiusBottomRight: =22
+            RadiusTopLeft: =22
+            RadiusTopRight: =22
+            Size: =13
+            Text: ="DODAJ DO PULI"
+            Width: =220
+            X: =RamkaFormularza.X + (RamkaFormularza.Width - Self.Width) / 2
+            Y: =RamkaFormularza.Y + If(WyborKategorii.Selected.Value = "Otwarte", 286, 372)
+      - NapisGwiazdka:
+          Control: Label@2.5.1
+          Properties:
+            Color: =RGBA(230,191,168,0.6)
+            Height: =18
+            Size: =10
+            Text: ="* pole obowiązkowe"
+            Width: =300
+            X: =RamkaFormularza.X + 28
+            Y: =RamkaFormularza.Y + RamkaFormularza.Height - 54
+      - WyborKategorii:
+          Control: Classic/DropDown@2.3.1
+          Properties:
+            BorderColor: =RGBA(242,193,78,0.55)
+            ChevronBackground: =RGBA(242,193,78,1)
+            ChevronFill: =RGBA(38,20,15,1)
+            Color: =RGBA(38,20,15,1)
+            Default: ="Wybierz kategorię..."
+            Fill: =RGBA(255,243,214,1)
+            Items: =["Wybierz kategorię...","Jedzenie","Popkultura","Praca","Styl życia","Otwarte"]
+            Items.Value: =Value
+            OnChange: =Set(gblDodano, false); Reset(PoleIntro); Reset(PoleOpcjaA); Reset(PoleOpcjaB)
+            SelectionColor: =RGBA(38,20,15,1)
+            SelectionFill: =RGBA(242,193,78,0.5)
+            Size: =14
+            Width: =RamkaFormularza.Width - 56
+            X: =RamkaFormularza.X + 28
+            Y: =NapisKategoria.Y + 26

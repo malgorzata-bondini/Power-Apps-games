@@ -1,0 +1,215 @@
+Screens:
+  EkranOcen:
+    Properties:
+      Fill: =RGBA(239, 237, 228, 1)
+      LoadingSpinnerColor: =RGBA(56, 96, 178, 1)
+    Children:
+      - Formularz:
+          Control: HtmlViewer@2.1.0
+          Properties:
+            Font: =Font.'Open Sans'
+            Height: =359
+            HoverBorderColor: =RGBA(166, 35, 26, 1)
+            HtmlText: |-
+              ="<div style='background:#F8F6F0;border-top:1px solid #D8D3C4;border-bottom:1px solid #D8D3C4;padding:30px 50px;box-sizing:border-box;min-height:337px;position:relative;font-family:Segoe UI,sans-serif'>" &
+              "<div style='position:absolute;left:0;top:0;bottom:0;width:22px;background-color:#17150F;background-image:repeating-linear-gradient(to bottom,transparent 0 9px,#F8F6F0 9px 21px)'></div>" &
+              "<div style='position:absolute;right:0;top:0;bottom:0;width:22px;background-color:#17150F;background-image:repeating-linear-gradient(to bottom,transparent 0 9px,#F8F6F0 9px 21px)'></div>" &
+              "</div>"
+            Size: =12.60
+            Width: =841
+            X: =26.99
+            Y: =392
+      - Wyczyść:
+          Control: Classic/Button@2.2.0
+          Properties:
+            BorderColor: =RGBA(216, 211, 196, 1)
+            BorderThickness: =3
+            Color: =RGBA(74, 70, 60, 1)
+            DisabledBorderColor: =RGBA(166, 166, 166, 1)
+            DisabledFill: =RGBA(239, 237, 228, 1)
+            DisplayMode: =If(IsBlank(ListaFilmów.Selected) && Gwiazdki.Value = 0 && IsBlank(PoleRecenzji.Text), DisplayMode.Disabled, DisplayMode.Edit)
+            Fill: =RGBA(0, 0, 0, 0)
+            FocusedBorderColor: =RGBA(0, 0, 0, 0)
+            FocusedBorderThickness: =false
+            Font: =Font.'Open Sans'
+            FontWeight: =FontWeight.Bold
+            Height: =42
+            HoverBorderColor: =RGBA(74, 70, 60, 1)
+            HoverColor: =RGBA(23, 21, 15, 1)
+            HoverFill: =RGBA(0, 0, 0, 0)
+            OnSelect: =Reset(ListaFilmów); Reset(Gwiazdki); Reset(PoleRecenzji)
+            PressedBorderColor: =RGBA(102, 98, 91, 1)
+            PressedColor: =RGBA(0, 0, 0, 1)
+            PressedFill: =RGBA(239, 237, 228, 1)
+            RadiusBottomLeft: =0
+            RadiusBottomRight: =0
+            RadiusTopLeft: =0
+            RadiusTopRight: =0
+            Size: =10.80
+            Text: ="Wyczyść formularz"
+            Width: =173
+            X: =156
+            Y: =323
+      - Wyślij:
+          Control: Classic/Button@2.2.0
+          Properties:
+            BorderColor: =RGBA(0, 0, 0, 0)
+            BorderThickness: =0
+            Color: =RGBA(251, 248, 242, 1)
+            DisabledBorderColor: =RGBA(216, 211, 196, 1)
+            DisabledColor: =RGBA(139, 134, 119, 1)
+            DisabledFill: =RGBA(216, 211, 196, 1)
+            DisplayMode: =If(IsBlank(ListaFilmów.Selected) || Gwiazdki.Value = 0, DisplayMode.Disabled, DisplayMode.Edit)
+            Fill: =RGBA(166, 35, 26, 1)
+            FocusedBorderColor: =RGBA(0, 0, 0, 0)
+            FocusedBorderThickness: =false
+            Font: =Font.'Open Sans'
+            FontWeight: =FontWeight.Bold
+            Height: =42
+            HoverBorderColor: =RGBA(0, 0, 0, 0)
+            HoverColor: =RGBA(251, 248, 242, 1)
+            HoverFill: =RGBA(255, 98, 13, 0.57)
+            OnSelect: |-
+              =Patch(Recenzje, Defaults(Recenzje), {
+                  Title:    ListaFilmów.Selected.Tytul,
+                  FilmId:   ListaFilmów.Selected.FilmId,
+                  Ocena:    Gwiazdki.Value,
+                  Recenzja: PoleRecenzji.Text,
+                  Autor:    User().FullName
+              });
+              Reset(ListaFilmów); Reset(Gwiazdki); Reset(PoleRecenzji);
+              Notify("Zapisano", NotificationType.Success);
+              Set(gblFilmDoOcenyId, "");
+              Navigate(MovieApp, ScreenTransition.Fade)
+            PressedBorderColor: =RGBA(110, 22, 16, 1)
+            PressedColor: =RGBA(251, 248, 242, 1)
+            PressedFill: = RGBA(110, 22, 16, 1)
+            RadiusBottomLeft: =0
+            RadiusBottomRight: =0
+            RadiusTopLeft: =0
+            RadiusTopRight: =0
+            Size: =10.80
+            Text: ="Wyślij"
+            Width: =118
+            X: =27
+            Y: =323
+      - ListaFilmów:
+          Control: Classic/ComboBox@2.4.0
+          Properties:
+            BorderColor: =RGBA(216, 211, 196, 1)
+            BorderThickness: =1
+            ChevronBackground: =RGBA(0, 0, 0, 0)
+            ChevronFill: =RGBA(166,35,26,1)
+            ChevronHoverBackground: =RGBA(232, 229, 219, 1)
+            ChevronHoverFill: =RGBA(110, 22, 16, 1)
+            Color: =RGBA(23,21,15,1)
+            DefaultSelectedItems: =Filter(colFilmyAZ, FilmId = gblFilmDoOcenyId)
+            DisplayFields: =["Etykieta"]
+            Fill: =RGBA(248,246,240,1)
+            FocusedBorderThickness: =2
+            Font: =Font.'Open Sans'
+            HoverBorderColor: =RGBA(166, 35, 26, 1)
+            HoverColor: =RGBA(23,21,15,1)
+            HoverFill: =RGBA(216,211,196,1)
+            InputTextPlaceholder: ="Wyszukaj tytuł filmu"
+            Items: =If(IsBlank(ListaFilmów.SearchText), colFilmyAZ, Filter(colFilmyAZ, StartsWith(Etykieta, ListaFilmów.SearchText)))
+            PressedColor: =RGBA(23,21,15,1)
+            PressedFill: =RGBA(216,211,196,1)
+            SearchFields: =["Etykieta"]
+            SelectMultiple: =false
+            SelectionColor: =RGBA(23,21,15,1)
+            SelectionFill: =RGBA(251,248,242,1)
+            SelectionTagColor: =RGBA(23,21,15,1)
+            SelectionTagFill: =RGBA(248,246,240,1)
+            Size: =12.60
+            Width: =318
+            X: =27
+            Y: =266
+      - Nagłówek:
+          Control: HtmlViewer@2.1.0
+          Properties:
+            Font: =Font.'Open Sans'
+            Height: =259
+            HtmlText: |-
+              ="<p style='font-family:Consolas,monospace;font-size:16px;letter-spacing:.20em;text-transform:uppercase;color:#A6231A;margin:0 0 20px'>Zeznania widza</p>" &
+              "<p style='font-family:Georgia,serif;font-weight:400;font-size:50px;line-height:1.03;letter-spacing:-.02em;color:#17150F;margin:0 0 14px;white-space:nowrap'>Oceń film<br><i style='color:#4A463C'>gwiazdki same się nie dadzą</i></p>" &
+              "<p style='color:#4A463C;margin:0 0 20px;font-size:18px;line-height:1.55'>Wybierz tytuł i wydaj werdykt. Przy kolejnym losowaniu będzie wiadomo, czy szykować popcorn, czy szukać dalej.</p>" &
+              "<div style='height:14px;margin:0 0 20px;background-color:#17150F;background-image:repeating-linear-gradient(to right,transparent 0 7px,#EFEDE4 7px 16px)'></div>"
+            Size: =12.60
+            Width: =1332
+            X: =27
+            Y: =7
+      - Gwiazdki:
+          Control: Rating@2.1.0
+          Properties:
+            BorderColor: =RGBA(0, 18, 107, 1)
+            Default: =0
+            Height: =65
+            RatingFill: =RGBA(201, 162, 39, 1)
+            Width: =273
+            X: =72
+            Y: =434
+      - NapisRecenzja:
+          Control: HtmlViewer@2.1.0
+          Properties:
+            Font: =Font.'Open Sans'
+            Height: =32
+            HtmlText: ="<p style='font-family:Consolas,monospace;font-size:15px;letter-spacing:.16em;text-transform:uppercase;color:#8B8677;margin:0'>Tutaj napisz recenzję filmu</p>"
+            PaddingRight: =4.50
+            PaddingTop: =4.50
+            Size: =12.60
+            Width: =325
+            X: =71.97
+            Y: =514
+      - PoleRecenzji:
+          Control: Classic/TextInput@2.3.2
+          Properties:
+            BorderColor: =RGBA(216, 211, 196, 1)
+            BorderThickness: =1
+            Color: = RGBA(23, 21, 15, 1)
+            Default: =
+            Fill: =RGBA(248, 246, 240, 1)
+            FocusedBorderColor: =RGBA(166, 35, 26, 1)
+            FocusedBorderThickness: =1
+            Font: =Font.'Open Sans'
+            Height: =156
+            HintText: ="Napisz coś od serca!"
+            HoverBorderColor: =RGBA(166, 35, 26, 1)
+            HoverColor: =RGBA(23, 21, 15, 1)
+            HoverFill: =RGBA(248, 246, 240, 1)
+            Mode: =TextMode.MultiLine
+            PaddingRight: =4.50
+            PaddingTop: =4.50
+            PressedBorderColor: =RGBA(166, 35, 26, 1)
+            PressedColor: =RGBA(23, 21, 15, 1)
+            PressedFill: =RGBA(248, 246, 240, 1)
+            Size: =13.49
+            Width: =629.80
+            X: =71.97
+            Y: =557
+      - IkonkaCofnij:
+          Control: Classic/Icon@2.5.0
+          Properties:
+            BorderColor: =RGBA(0, 18, 107, 1)
+            Color: =RGBA(74, 70, 60, 1)
+            Height: =60
+            HoverColor: =RGBA(166, 35, 26, 1)
+            Icon: =Icon.BackArrow
+            OnSelect: =Navigate(MovieApp, ScreenTransition.Fade)
+            PaddingRight: =0.00
+            PaddingTop: =0.00
+            PressedBorderColor: =RGBA(110, 22, 16, 1)
+            Width: =72
+            X: =1256
+            Y: =28
+      - Kot:
+          Control: Image@2.2.3
+          Properties:
+            BorderColor: =RGBA(0, 18, 107, 1)
+            Height: =319
+            Image: ='cat popcorn'
+            PaddingRight: =0.00
+            PaddingTop: =0.00
+            Width: =212
+            X: =1019
+            Y: =413
